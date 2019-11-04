@@ -7,6 +7,7 @@ import numpy as np
 def getMaxContourArea(contours):
     maxArea=0
     maxContour=None
+    box=None
     for contour in contours:
         Xmin = np.min(contour[:,:,0])
         Xmax = np.max(contour[:,:,0])
@@ -16,8 +17,9 @@ def getMaxContourArea(contours):
         if contourArea>maxArea:
             maxArea=contourArea
             maxContour=contour
+            box=[Xmin, Xmax, Ymin, Ymax]
             
-    return maxArea,maxContour
+    return maxArea,maxContour,box
 
 
 
@@ -28,12 +30,11 @@ def getHand(frame):
     handBool=False
     humanSkin=getHumanSkin(frame)
     contours = cv2.findContours(humanSkin, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[0]
-    if   len(contours)>0    :
-                maxContourArea,maxContour =getMaxContourArea(contours)
-                if maxContourArea > 2500:
+    if   len(contours)>0 :
+                maxContourArea,maxContour,[Xmin, Xmax, Ymin, Ymax] =getMaxContourArea(contours)
+                if maxContourArea > 100000:
                     handBool=True
-                    x, y, w1, h1 = cv2.boundingRect(maxContour)
-                    humanSkin = humanSkin[y:y + h1, x:x + w1]
+                    humanSkin = humanSkin[Ymin:Ymax, Xmin:Xmax]
         
     return humanSkin,handBool
 
