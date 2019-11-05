@@ -29,6 +29,7 @@ def getHand(frame):
     
     handBool=False
     humanSkin=getHumanSkin(frame)
+    maxContour=None
     contours = cv2.findContours(humanSkin, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[0]
     if   len(contours)>0 :
                 maxContourArea,maxContour,[Xmin, Xmax, Ymin, Ymax] =getMaxContourArea(contours)
@@ -36,7 +37,7 @@ def getHand(frame):
                     handBool=True
                     humanSkin = humanSkin[Ymin:Ymax, Xmin:Xmax]
         
-    return humanSkin,handBool
+    return humanSkin,handBool,maxContour
 
 
 
