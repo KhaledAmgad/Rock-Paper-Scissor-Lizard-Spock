@@ -52,17 +52,6 @@ def getHumanSkin(frame):
     #skin color range for YCbCr color space 
     YCrCb_mask = cv2.inRange(img_YCrCb, (0, 135, 85), (255,180,135)) 
     YCrCb_mask = cv2.morphologyEx(YCrCb_mask, cv2.MORPH_OPEN, np.ones((5,5), np.uint8))
-    
-    '''try:
-        positions = np.nonzero(humanSkin)
-        top = positions[0].min()
-        bottom = positions[0].max()
-        left = positions[1].min()
-        right = positions[1].max()
-        humanSkin = humanSkin[top:top + bottom, left:left + right]
-    except:
-        None'''
-
 
     
     return YCrCb_mask
