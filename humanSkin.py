@@ -1,6 +1,13 @@
 import cv2
 import numpy as np
 
+#Shoelace formula
+def getContourArea(contour):
+    x=contour[:,0,0]
+    y=contour[:,0,1]
+    #np.roll(x, 1) rotate right (1)
+    return 0.5*np.abs(np.dot(x,np.roll(y,1))-np.dot(y,np.roll(x,1)))
+
 
 
 
@@ -13,7 +20,7 @@ def getMaxContourArea(contours):
         Xmax = np.max(contour[:,:,0])
         Ymin = np.min(contour[:,:,1])
         Ymax = np.max(contour[:,:,1])
-        contourArea=(Xmax-Xmin)*(Ymax-Ymin)
+        contourArea=getContourArea(contour)
         if contourArea>maxArea:
             maxArea=contourArea
             maxContour=contour
@@ -33,7 +40,7 @@ def getHand(frame):
     contours = cv2.findContours(humanSkin, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[0]
     if   len(contours)>0 :
                 maxContourArea,maxContour,[Xmin, Xmax, Ymin, Ymax] =getMaxContourArea(contours)
-                if maxContourArea > 100000:
+                if maxContourArea > 10000:
                     handBool=True
                     humanSkin = humanSkin[Ymin:Ymax, Xmin:Xmax]
         
