@@ -52,9 +52,9 @@ def getHumanSkin(frame):
 
     img=np.copy(frame)
     
-    img =cv2.bilateralFilter(img,15,75,75)  #blur without losing edges
+    img = cv2.blur(img,(11,11)) #blur
 
-    #converting from gbr to YCbCr color space
+    #converting from rgb to YCbCr color space
     img_YCrCb = cv2.cvtColor(img, cv2.COLOR_BGR2YCrCb)
     #skin color range for YCbCr color space 
     YCrCb_mask = cv2.inRange(img_YCrCb, (0, 135, 85), (255,180,135)) 
