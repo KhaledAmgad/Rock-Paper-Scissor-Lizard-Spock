@@ -1,5 +1,7 @@
 from random import randint # for sorting and creating data pts
 from math import atan2 # for computing polar angle
+import math
+import numpy as np
 
 def polar_angle(p0,p1=None):
     if p1==None: p1=anchor
@@ -75,5 +77,54 @@ def graham_scan(points,show_progress=False):
 
 
 
+#defects
 
+
+
+def distanceCon(p0,p1):
+    y_span=p0[0,1]-p1[0,1]
+    x_span=p0[0,0]-p1[0,0]
+    return (y_span**2 + x_span**2)**0.5
+
+def getTriangleAreaAndAngle(far,start,end):
+
+    a = math.sqrt((end[0,0] - start[0,0])**2 + (end[0,1] - start[0,1])**2)
+    b = math.sqrt((far[0] - start[0,0])**2 + (far[1] - start[0,1])**2)
+    c = math.sqrt((end[0,0] - far[0])**2 + (end[0,1] - far[1])**2)
+    s = (a+b+c)/2
+    if (s*(s-a)*(s-b)*(s-c))<0: return [0,0]
+    area = math.sqrt(s*(s-a)*(s-b)*(s-c))
+    if b*c==0: return [0,0]
+    Aang= round((b**2 + c**2 - a**2)/(2*b*c),5)
+    if (Aang)<=-1.0 and (Aang)>=1.0: 
+        return [0,0]
     
+    angle = math.acos(Aang) *57
+    return [area,angle]
+
+
+
+def convexityDefects(contour, hull):
+    defects=[]
+    for i in range(hull.shape[0]-1):
+        dst=distanceCon(contour[hull[i][0]],contour[hull[i+1][0]])
+        if dst<50: 
+            continue
+        part=contour[hull[i][0]:hull[i+1][0],0,:]
+        
+        areaAndAngle=np.array([getTriangleAreaAndAngle(x,contour[hull[i][0]],contour[hull[i+1][0]]) for x in part])
+
+
+        heights=(2*areaAndAngle[:,0]/(dst))
+        if heights.size == 0:
+            continue
+        maxHeight=np.max(heights)
+        index=np.where(np.logical_and( heights==maxHeight , areaAndAngle[:,1]<90))[0]
+        if(index.size != 0 and maxHeight>80):
+            defects.append(np.array([contour[hull[i][0]],contour[hull[i+1][0]],contour[index[0]+hull[i][0]]]))
+            
+    
+
+
+    defects=np.array(defects)
+    return defects
